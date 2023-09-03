@@ -1,0 +1,155 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <!--引用通用的样式-->
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <style>
+
+        body {
+            background-color: #afc1ce;
+        }
+
+        .content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-right: 150px;
+        }
+
+        /*.login-wrap {*/
+        /*    position: absolute;*/
+        /*    right: 150px;*/
+        /*    top: 150px;*/
+        /*}*/
+
+        .login-wrap {
+            width: 550px;
+            height: 350px;
+            display: inline-block;
+            text-align: left;
+            background-color: white;
+            /*padding: 16px;*/
+            border-radius: 8px;
+            box-shadow: 0 0 9px rgba(31, 32, 33, 1);
+        }
+
+        .login-wrap .login-title {
+            height: 48px;
+            background-color: rgba(31, 32, 33, .2);
+            border-bottom: 1px solid rgba(31, 32, 33, .4);
+            font-size: 24px;
+            line-height: 48px;
+            text-align: center;
+            margin-bottom: 24px;
+            user-select: none;
+        }
+
+        .login-wrap .login-body {
+            padding: 24px;
+        }
+
+        .login-wrap .login-body > form {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .login-wrap .login-body .username,
+        .login-wrap .login-body .password {
+            height: 48px;
+            line-height: 48px;
+            margin-bottom: 36px;
+            text-align: center;
+        }
+
+        .login-wrap .login-body .username > input,
+        .login-wrap .login-body .password > input {
+            height: 36px;
+            font-size: 18px;
+            text-indent: 18px;
+            width: 80%;
+        }
+
+        .login-wrap .login-body .login-btn {
+            text-align: center;
+        }
+
+        .login-wrap .login-body .login-btn > input {
+            width: 360px;
+            height: 48px;
+            line-height: 48px;
+            font-size: 18px;
+            border: 0;
+            cursor: pointer;
+            background-color: indianred;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="login-wrap">
+        <div class="login-title">
+            <h2>管理员登录</h2>
+        </div>
+        <div class="login-body">
+            <form>
+                <div class="username">
+                    <input type="text" name="account" placeholder="请输入账号" value="ADMIN">
+                </div>
+                <div class="password">
+                    <input type="password" name="password" placeholder="请输入密码" value="123456">
+                </div>
+                <div class="title">
+                    <p style="color: red;font-size: 14px;height: 24px;line-height: 24px;text-align: center;"></p>
+                </div>
+                <div class="login-btn">
+                    <input type="button" onclick="_login()" value="登录">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jQuery-2.1.1.js"></script>
+<script>
+  function _login() {
+    // 1 获取账号
+    let account = document.querySelector(".username>input[name='account']").value;
+    let password = document.querySelector(".password>input[name='password']").value;
+    // 2 验证
+    let title = document.querySelector(".title>p");
+    if (account.length === 0) {
+      title.innerHTML = '账号不能为空';
+      return;
+    }
+    if (password.length === 0) {
+      title.innerHTML = '密码不能为空';
+      return;
+    }
+    // 3 发送请求  ajax
+    jQuery.ajax("/sys/login", {
+      method: "POST",
+      data: {account, password},
+      dataType: "json",
+      success(data) {
+        if (data.flag) {
+          window.location.href = "/main.html";
+        } else {
+          let title = document.querySelector(".title>p");
+          title.innerHTML = data.message;
+        }
+      }
+    })
+    // 4 响应 ： 成功 页面跳转 失败提示失败
+  }
+
+</script>
+</body>
+</html>

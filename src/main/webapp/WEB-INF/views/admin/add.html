@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/miniui/boot.js"></script>
+</head>
+<body>
+<form id="admin-add">
+    <fieldset style="border:solid 1px #aaa;padding:3px;">
+        <legend>基本信息</legend>
+        <div style="padding:5px;">
+            <table>
+                <tr>
+                    <td style="width:80px;">用户姓名</td>
+                    <td style="width:150px;">
+                        <input name="name" class="mini-textbox" required="true"/>
+                    </td>
+                    <td style="width:80px;">性别：</td>
+                    <td>
+                        <select name="gender" class="mini-radiobuttonlist">
+                            <option value="1">男</option>
+                            <option value="2">女</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>联系方法：</td>
+                    <td>
+                        <input id="admin-add-phone" name="phone" onblur="_checkPhone()" class="mini-textbox"
+                               required="true"/>
+                    </td>
+                    <td>出生日期：</td>
+                    <td>
+                        <input name="birth" class="mini-datepicker" required="true" emptyText="请选择日期"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+    <div style="text-align:center;padding:10px;">
+        <a class="mini-button" onclick="saveAdmin()" style="width:60px;margin-right:20px;">确定</a>
+        <a class="mini-button" onclick="channel()" style="width:60px;">取消</a>
+    </div>
+</form>
+<script src="/static/js/jQuery-2.1.1.js"></script>
+<script>
+  mini.parse();
+  let adminForm = new mini.Form("admin-add");
+
+  function saveAdmin() {
+    // console.log(adminForm.validate());
+    let data = adminForm.getData(true);
+    jQuery.ajax({
+      url: "/admin/saveAdmin",
+      method: "post",
+      data: data,
+      dataType: "json",
+      success(resp) {
+        if (resp.flag) {
+          mini.showTips({
+            content: resp.message,
+            state: "success",      //default|success|info|warning|danger
+            x: "center",          //left|center|right
+            y: "top",          //top|center|bottom
+            timeout: 1000     //自动消失间隔时间。默认2000（2秒）
+          })
+          channel()
+        } else {
+          mini.showTips({
+            content: resp.message,
+            state: "danger",      //default|success|info|warning|danger
+            x: "center",          //left|center|right
+            y: "top",          //top|center|bottom
+            timeout: 1000     //自动消失间隔时间。默认2000（2秒）
+          })
+        }
+      }
+    })
+  }
+
+  function _checkPhone() {
+    let phone = mini.get("#admin-add-phone").getValue();
+    jQuery.ajax({
+      url: "/admin/checkPhone",
+      method: "get",
+      data: {phone},
+      dataType: "json",
+      success(resp) {
+        console.log(resp)
+      }
+    })
+  }
+
+  function channel() {
+    adminForm.clear();
+  }
+</script>
+</body>
+</html>

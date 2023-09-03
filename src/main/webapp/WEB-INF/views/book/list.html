@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>book</h1>
+<div>
+    <div class="mini-toolbar" style="border-bottom:0;padding:0px;">
+        <table style="width:100%;">
+            <tr>
+                <td style="width:100%;">
+                    <a class="mini-button" iconCls="icon-add" onclick="_addBook()">增加</a>
+                    <a class="mini-button" iconCls="icon-add" onclick="_editBook()">编辑</a>
+                    <a class="mini-button" iconCls="icon-remove" onclick="_removeBook()">删除</a>
+                </td>
+                <td style="white-space:nowrap;">
+                    <input id="key" class="mini-textbox" emptyText="请输入" style="width:150px;" onenter="onKeyEnter"/>
+                    <a class="mini-button" onclick="_searchBook()">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="book-list" class="mini-datagrid" style="width:100%;height:480px;"
+         url="/book/list" idField="bookId" multiSelect="true" ajaxType="get"
+    >
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="checkcolumn"></div>
+            <div field="bookId" width="120" headerAlign="center">图书编码</div>
+            <div field="bookName" width="120" headerAlign="center">图书名称</div>
+            <div field="publisher" width="120" headerAlign="center">出版社</div>
+            <div field="author" width="120" headerAlign="center">作者</div>
+            <div field="bookType" width="120" headerAlign="center">图书类别</div>
+            <div field="remain" width="120" renderer="_checkRemain" headerAlign="center">库存</div>
+        </div>
+    </div>
+
+</div>
+<script src="/static/miniui/boot.js"></script>
+<script src="/static/js/jQuery-2.1.1.js"></script>
+<script>
+
+  mini.parse();
+  let dataGrid = mini.get("book-list");
+  dataGrid.load();
+
+  function _addBook() {
+    mini.open({
+      targetWindow: window,
+      url: "/views/book/add.html",
+      title: "新增图书",
+      width: 600,
+      height: 400,
+      onload: function () {
+        console.log('book add load')
+      },
+      ondestroy: function () {
+        // 重新加载
+        dataGrid.reload();
+      }
+    })
+  }
+
+  function _editBook() {
+    let rows = dataGrid.getSelecteds();
+    if (rows.length === 0) {
+      mini.alert("请选中一行数据");
+      return;
+    }
+    if (rows.length > 1) {
+      mini.alert("最多只能编辑一行数据");
+      return;
+    }
+    let row = rows[0];
+    mini.open({
+      title: "编辑员工", width: 600, height: 400,
+      url: "/views/book/edit.html",
+      onload() {
+        let iframe = this.getIFrameEl();
+        iframe.contentWindow.SetData(row);
+      },
+      ondestroy(action) {
+        dataGrid.reload();
+      }
+    })
+    //   mini.open({
+    //     url: bootPATH + "../demo/CommonLibs/EmployeeWindow.html",
+    //     title: "编辑员工", width: 600, height: 400,
+    //     onload: function () {
+    //       var iframe = this.getIFrameEl();
+    //       var data = {action: "edit", id: row.id};
+    //       iframe.contentWindow.SetData(data);
+    //
+    //     },
+    //     ondestroy: function (action) {
+    //       //var iframe = this.getIFrameEl();
+    //       grid.reload();
+    //     }
+  }
+
+  function _removeBook() {
+    let rows = dataGrid.getSelecteds();
+    if (rows.length > 0) {
+      if (confirm("确定删除选中记录？")) {
+        let ids = [];
+        for (let i = 0, l = rows.length; i < l; i++) {
+          let r = rows[i];
+          ids.push(r.bookId);
+        }
+        let id = ids.join(',');
+        dataGrid.loading("操作中，请稍后......");
+        $.ajax({
+          url: "/book/remove?ids=" + id,
+          dataType: "json",
+          success: function (resp) {
+            dataGrid.reload();
+          }
+        });
+      }
+    } else {
+      alert("请选中一条记录");
+    }
+  }
+
+  function _searchBook() {
+    console.log("search")
+  }
+
+  function _checkRemain(colum) {
+    let row = colum.row;
+    if (row.remain <= 10) {
+      return '<span style="color: red;font-weight: 800;">' + row.remain + ' </span>'
+    } else {
+      return row.remain
+    }
+  }
+</script>
+</body>
+</html>

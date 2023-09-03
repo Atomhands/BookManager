@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #user-info > div {
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+<h1>用户信息</h1>
+<div id="user-info">
+    <div class="account">用户账号 ： <span></span></div>
+    <div class="name">用户姓名 ： <span></span></div>
+    <div class="phone">联系方法 ： <span></span></div>
+    <div class="ctime">注册时间 ： <span></span></div>
+    <div class="role-name">用户角色 ： <span></span></div>
+</div>
+<script src="/static/js/jQuery-2.1.1.js"></script>
+<script>
+  function loadUserInfo() {
+    jQuery.ajax("/sys/info", {
+      method: "get",
+      dataType: "json",
+      success(data) {
+        // console.log(data)
+        let {account, adminId, createTime, name, password, phone, roleName} = data.data;
+        document.querySelector("#user-info .account>span").innerHTML = account;
+        document.querySelector("#user-info .name>span").innerHTML = name;
+        document.querySelector("#user-info .phone>span").innerHTML = phone;
+        document.querySelector("#user-info .ctime>span").innerHTML = createTime;
+        document.querySelector("#user-info .role-name>span").innerHTML = roleName;
+      }
+    })
+  }
+
+  loadUserInfo();
+</script>
+</body>
+</html>

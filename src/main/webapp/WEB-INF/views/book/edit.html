@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <form id="book-edit">
+        <input name="bookId" class="mini-hidden" value=""/>
+        <div style="padding-left:11px;padding-bottom:5px;">
+            <table style="table-layout:fixed;">
+                <tr>
+                    <td style="width:80px;">图书名称：</td>
+                    <td style="width:150px;">
+                        <input name="bookName" class="mini-textbox" required="true" emptyText="图书名称"/>
+                    </td>
+                    <td style="width:80px;">图书类别：</td>
+                    <td style="width:150px;">
+                        <input name="bookType" class="mini-combobox" valueField="name" textField="name"
+                               url="/data/books.json"
+                               onvaluechanged="onDeptChanged" required="true"
+                               emptyText="请选择图书类别"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:80px;">出版社：</td>
+                    <td colspan="3" style="width:380px;">
+                        <input style="width: 100%" name="publisher" class="mini-textbox" required="true"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>作者：</td>
+                    <td>
+                        <input name="author" class="mini-textbox" required="true"/>
+                    </td>
+                    <td>数量：</td>
+                    <td>
+                        <input name="remain" class="mini-spinner" required="true" value="1" minValue="1"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div style="text-align:center;padding:10px;">
+        <a class="mini-button" onclick="_editBook()" style="width:60px;margin-right:20px;">确定</a>
+        <a class="mini-button" onclick="_onCancel()" style="width:60px;">取消</a>
+    </div>
+</div>
+<script src="/static/miniui/boot.js"></script>
+<script src="/static/js/jQuery-2.1.1.js"></script>
+<script>
+  mini.parse();
+  let bookForm = new mini.Form("book-edit");
+
+  function _editBook() {
+    let data = bookForm.getData();
+    jQuery.ajax({
+      url: "/book/edit",
+      method: "post",
+      data: data,
+      dataType: "json",
+      success(resp) {
+        _onCancel()
+      }
+    })
+  }
+
+  function _onCancel() {
+    window.CloseOwnerWindow("cancel")
+  }
+
+  function SetData(data) {
+    // console.log(data);
+    bookForm.setData(data);
+  }
+</script>
+
+</body>
+</html>
