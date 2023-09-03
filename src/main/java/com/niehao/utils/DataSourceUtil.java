@@ -15,10 +15,10 @@ public class DataSourceUtil {
     static {
         dataSource = new DruidDataSource();
         try {
-            dataSource.setUsername("jack");
+            dataSource.setUsername("scott");
             dataSource.setPassword("123456");
             dataSource.setDriverClassName("oracle.jdbc.OracleDriver");
-            dataSource.setUrl("jdbc:oracle:thin:@192.168.100.100:1521:orcl");
+            dataSource.setUrl("jdbc:oracle:thin:@192.168.172.3:1521:orcl");
             dataSource.setInitialSize(5);
             dataSource.setMaxActive(10);
             dataSource.init();
